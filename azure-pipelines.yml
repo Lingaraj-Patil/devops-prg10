@@ -1,29 +1,30 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
-- main
+  branches:
+    include:
+      - main
 
-pool:
-  name: 'MyLocalPool'
+stages:
+- stage: __default
+  jobs:
+  - job: Job
+    pool:
+      vmImage: 'ubuntu-latest'
 
-steps:
-- checkout: self
+    steps:
+    - checkout: self
 
-- script: mvn clean test
-  displayName: 'Build and Run Unit Tests'
+    - task: CmdLine@2
+      displayName: 'Build and Run Unit Tests'
+      inputs:
+        script: mvn clean test
 
-- task: PublishTestResults@2
-  inputs:
-    testResultsFiles: '**/target/surefire-reports/TEST-*.xml'
-    testResultsFormat: 'JUnit'
-  displayName: 'Publish Test Results'
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFiles: '**/target/surefire-reports/TEST-*.xml'
+        testResultsFormat: 'JUnit'
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: 'target'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
-  displayName: 'Publish Build Artifacts'
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: 'target'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'
